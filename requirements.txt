@@ -1,0 +1,38 @@
+# Core data analysis
+numpy
+pandas
+scipy
+
+# Climate and NetCDF processing
+xarray
+netCDF4
+h5netcdf
+dask[complete]
+zarr
+cftime
+bottleneck
+
+# Visualization
+matplotlib
+hvplot
+holoviews
+panel
+bokeh
+cartopy
+cmocean
+
+# Machine learning
+scikit-learn
+xgboost
+shap
+
+# Statistics
+pymannkendall
+statsmodels
+
+# OpenVisus queries
+OpenVisus
+
+# Notebook support
+jupyter
+ipykernel
