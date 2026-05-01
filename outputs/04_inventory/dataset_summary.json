@@ -1,0 +1,19 @@
+{
+  "Dataset": "NEX-GDDP-CMIP6 (NASA Earth Exchange)",
+  "Source": "AWS S3 (s3://nex-gddp-cmip6)",
+  "Reference": "Thrasher et al. (2022), Scientific Data 9:262",
+  "Downscaling method": "BCSD (Bias-Corrected Spatial Disaggregation)",
+  "Spatial resolution": "0.25 x 0.25 deg (~25 km)",
+  "Temporal resolution": "Daily",
+  "Historical period": "1950-2014",
+  "Projected period": "2015-2100",
+  "Variables extracted": "tas (temperature), hurs (relative humidity)",
+  "Study region": "South America (56S-13N, 82W-34W)",
+  "Clipped grid": "276 x 192 (lat x lon)",
+  "Models available": "8 of 8 selected",
+  "Models downloaded": "ACCESS-CM2, CESM2, CanESM5, EC-Earth3, GFDL-ESM4, IPSL-CM6A-LR, MIROC6, MPI-ESM1-2-HR",
+  "Models pending": "",
+  "Scenarios": "historical, SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5",
+  "Total files": "6,544",
+  "Disk usage": "152.5 GB"
+}
