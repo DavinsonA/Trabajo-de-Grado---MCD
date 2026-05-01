@@ -4,8 +4,7 @@ Este repositorio contiene el proyecto del trabajo de grado para el análisis de 
 
 ## Autores
 
-Davinson Alexander Arteaga Bermudez
-Gian Alepsi Mendoza Oviedo
+Davinson Alexander Arteaga Bermudez y Gian Alepsi Mendoza Oviedo
 
 ## Director
 
