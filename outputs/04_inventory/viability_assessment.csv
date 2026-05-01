@@ -1,6 +1,6 @@
-criterion,result,pass
-Full temporal coverage (1950-2100),100.0% of model/scenario/variable combinations,True
-Data integrity (NaN acceptable for land analysis),Average 51.3% NaN (expected: >50% due to ocean coverage),True
-Values within physical ranges,0.0027% out of range (threshold: <0.1%),True
-Dimensional consistency across models,"lat=consistent, lon=consistent",True
-Ensemble diversity (minimum 5 models for robust statistics),8 models available,True
+criterion;result;pass
+Full temporal coverage (1950-2100);100.0% of model/scenario/variable combinations;True
+Data integrity (NaN acceptable for land analysis);Average 51.3% NaN (expected: >50% due to ocean coverage);True
+Values within physical ranges;0.0027% out of range (threshold: <0.1%);True
+Dimensional consistency across models;lat=consistent, lon=consistent;True
+Ensemble diversity;8 models available;True

@@ -1,0 +1,13 @@
+region,period,scenario,year_start,year_end,r,slope,n,models_used
+Northern Tropics,Present (1990-2014),historical,1990,2014,-0.4654,-2.2579,900,"ACCESS-CM2, CESM2, CanESM5"
+Northern Tropics,"Mid-century (2040-2060, SSP2-4.5)",ssp245,2040,2060,-0.4306,-1.8313,756,"ACCESS-CM2, CESM2, CanESM5"
+Northern Tropics,"End-century (2080-2100, SSP5-8.5)",ssp585,2080,2100,-0.3,-1.0472,756,"ACCESS-CM2, CESM2, CanESM5"
+Central Amazonia,Present (1990-2014),historical,1990,2014,-0.1288,-1.155,900,"ACCESS-CM2, CESM2, CanESM5"
+Central Amazonia,"Mid-century (2040-2060, SSP2-4.5)",ssp245,2040,2060,-0.2438,-1.8353,756,"ACCESS-CM2, CESM2, CanESM5"
+Central Amazonia,"End-century (2080-2100, SSP5-8.5)",ssp585,2080,2100,-0.4362,-2.9665,756,"ACCESS-CM2, CESM2, CanESM5"
+Subtropical Andes,Present (1990-2014),historical,1990,2014,0.6213,2.4883,900,"ACCESS-CM2, CESM2, CanESM5"
+Subtropical Andes,"Mid-century (2040-2060, SSP2-4.5)",ssp245,2040,2060,0.5182,2.1497,756,"ACCESS-CM2, CESM2, CanESM5"
+Subtropical Andes,"End-century (2080-2100, SSP5-8.5)",ssp585,2080,2100,0.2794,1.1943,756,"ACCESS-CM2, CESM2, CanESM5"
+Southern Cone,Present (1990-2014),historical,1990,2014,-0.7542,-0.8902,900,"ACCESS-CM2, CESM2, CanESM5"
+Southern Cone,"Mid-century (2040-2060, SSP2-4.5)",ssp245,2040,2060,-0.7487,-0.8807,756,"ACCESS-CM2, CESM2, CanESM5"
+Southern Cone,"End-century (2080-2100, SSP5-8.5)",ssp585,2080,2100,-0.7271,-0.9114,756,"ACCESS-CM2, CESM2, CanESM5"
