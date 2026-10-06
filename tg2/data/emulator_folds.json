@@ -1,0 +1,149 @@
+{
+  "targets": [
+    "tas_anom",
+    "hurs_anom"
+  ],
+  "feature_sets": {
+    "base": [
+      "ghg_rf_wm2",
+      "tcr",
+      "month_sin",
+      "month_cos",
+      "region_northern_tropics",
+      "region_central_amazonia",
+      "region_subtropical_andes",
+      "region_southern_cone"
+    ],
+    "integrated_ma20": [
+      "ghg_rf_wm2",
+      "ghg_rf_ma20",
+      "tcr",
+      "month_sin",
+      "month_cos",
+      "region_northern_tropics",
+      "region_central_amazonia",
+      "region_subtropical_andes",
+      "region_southern_cone"
+    ],
+    "integrated_cum": [
+      "ghg_rf_wm2",
+      "ghg_rf_cum",
+      "tcr",
+      "month_sin",
+      "month_cos",
+      "region_northern_tropics",
+      "region_central_amazonia",
+      "region_subtropical_andes",
+      "region_southern_cone"
+    ]
+  },
+  "identifiers": [
+    "model",
+    "scenario",
+    "region",
+    "year",
+    "month"
+  ],
+  "fold_rules": {
+    "loso": "test: scenario == held_out (2015-2100); train: scenario != held_out",
+    "lomo": "test: model == held_out; train: model != held_out"
+  },
+  "folds": [
+    {
+      "fold": "loso_ssp126",
+      "kind": "loso",
+      "held_out": "ssp126",
+      "n_train": 124032,
+      "n_test": 33024,
+      "test_years": "2015-2100"
+    },
+    {
+      "fold": "loso_ssp245",
+      "kind": "loso",
+      "held_out": "ssp245",
+      "n_train": 124032,
+      "n_test": 33024,
+      "test_years": "2015-2100"
+    },
+    {
+      "fold": "loso_ssp370",
+      "kind": "loso",
+      "held_out": "ssp370",
+      "n_train": 124032,
+      "n_test": 33024,
+      "test_years": "2015-2100"
+    },
+    {
+      "fold": "loso_ssp585",
+      "kind": "loso",
+      "held_out": "ssp585",
+      "n_train": 124032,
+      "n_test": 33024,
+      "test_years": "2015-2100"
+    },
+    {
+      "fold": "lomo_ACCESS-CM2",
+      "kind": "lomo",
+      "held_out": "ACCESS-CM2",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_CESM2",
+      "kind": "lomo",
+      "held_out": "CESM2",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_CanESM5",
+      "kind": "lomo",
+      "held_out": "CanESM5",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_EC-Earth3",
+      "kind": "lomo",
+      "held_out": "EC-Earth3",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_GFDL-ESM4",
+      "kind": "lomo",
+      "held_out": "GFDL-ESM4",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_IPSL-CM6A-LR",
+      "kind": "lomo",
+      "held_out": "IPSL-CM6A-LR",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_MIROC6",
+      "kind": "lomo",
+      "held_out": "MIROC6",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    },
+    {
+      "fold": "lomo_MPI-ESM1-2-HR",
+      "kind": "lomo",
+      "held_out": "MPI-ESM1-2-HR",
+      "n_train": 137424,
+      "n_test": 19632,
+      "test_years": "1950-2100"
+    }
+  ]
+}
