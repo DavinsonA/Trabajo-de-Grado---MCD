@@ -1,7 +1,23 @@
-.venv/
-logs/
-
-*.log
-*.pyc
+# Python
 __pycache__/
+*.pyc
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# Data: lives on the VM volume, never in git
+*.nc
+*.nc4
+*.parquet
+*.zarr/
+raw/
+processed/
+
+# Logs and temporary files
+logs/
+tmp/
+*.log
+
+# OS and editor
 .DS_Store
+.vscode/
