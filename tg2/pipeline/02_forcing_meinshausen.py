@@ -17,6 +17,7 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.ticker import StrMethodFormatter
 import numpy as np
 import pandas as pd
 
@@ -53,6 +54,38 @@ def ghg_forcing(df, ref):
                       + RE_HFC134A * (df["hfc134aeq_ppt"] - ref["hfc134aeq_ppt"]))
     return f_co2 + f_ch4 + f_n2o + f_minor
 
+
+def plot_figure(forcing, path):
+    plt.rcParams.update({"font.size": 9, "axes.titlesize": 10, "axes.labelsize": 9,
+                         "xtick.labelsize": 8.5, "ytick.labelsize": 8.5, "legend.fontsize": 8.5})
+    fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.7), sharey=True)
+    hist_end = forcing[(forcing.scenario == "historical") & (forcing.year == 2014)]
+    s126 = forcing[forcing.scenario == "ssp126"].set_index("year")
+    panels = (("co2eq_ppm", "CO$_2$-equivalent concentration"), ("co2_ppm", "CO$_2$ concentration"))
+    for ax, (col, title) in zip(axes, panels):
+        for scenario in SHEETS:
+            s = forcing[forcing.scenario == scenario]
+            if scenario != "historical":
+                s = pd.concat([hist_end, s])
+            ax.plot(s.year, s[col], color=COLORS[scenario], lw=1.5, label=LABELS[scenario])
+        peak_year = int(s126[col].idxmax())
+        ax.plot(peak_year, s126[col].max(), "o", ms=5, mfc="white", mec=COLORS["ssp126"], mew=1.4, zorder=5)
+        ax.annotate(str(peak_year), (peak_year, s126[col].max()), xytext=(0, -7), textcoords="offset points",
+                    ha="center", va="top", fontsize=8, color=COLORS["ssp126"])
+        ax.axvline(2014.5, color="gray", ls="--", lw=0.7)
+        ax.set_title(title, loc="left")
+        ax.set_xlim(1950, 2100)
+        ax.set_xticks([1950, 2000, 2050, 2100])
+        ax.set_xlabel("Year")
+        ax.grid(alpha=0.3, lw=0.5)
+    axes[0].set_ylim(250, 1600)
+    axes[0].set_yticks([400, 800, 1200, 1600])
+    axes[0].yaxis.set_major_formatter(StrMethodFormatter("{x:,.0f}"))
+    axes[0].set_ylabel("ppm")
+    axes[0].legend(frameon=False, loc="upper left", handlelength=1.6, labelspacing=0.35)
+    fig.tight_layout(pad=0.4, w_pad=1.8)
+    fig.savefig(path, dpi=300)
+    plt.close(fig)
 
 def main():
     names = pd.ExcelFile(XLSX).sheet_names
@@ -98,26 +131,7 @@ def main():
     print(f"\nSSP1-2.6 peak: CO2-eq {s126.co2eq_ppm.max():.1f} ppm in {s126.co2eq_ppm.idxmax()} | "
           f"CO2 {s126.co2_ppm.max():.1f} ppm in {s126.co2_ppm.idxmax()} | GHG RF {s126.ghg_rf_wm2.max():.2f} W/m2 in {s126.ghg_rf_wm2.idxmax()}")
 
-    fig, ax = plt.subplots(figsize=(7.5, 4.5))
-    hist_end = forcing[(forcing.scenario == "historical") & (forcing.year == 2014)]
-    for scenario in SHEETS:
-        s = forcing[forcing.scenario == scenario]
-        if scenario != "historical":
-            s = pd.concat([hist_end, s])
-        ax.plot(s.year, s.ghg_rf_wm2, color=COLORS[scenario], lw=2, label=LABELS[scenario])
-    peak_year, peak = int(s126.ghg_rf_wm2.idxmax()), s126.ghg_rf_wm2.max()
-    ax.plot(peak_year, peak, "o", ms=7, mfc="white", mec=COLORS["ssp126"], mew=2, zorder=5)
-    ax.annotate(f"{peak_year}, {peak:.2f} W m$^{{-2}}$", (peak_year, peak), xytext=(0, -12), textcoords="offset points",
-                ha="center", va="top", fontsize=9, color=COLORS["ssp126"])
-    ax.axvline(2014.5, color="gray", ls="--", lw=0.8)
-    ax.set_xlim(1950, 2100)
-    ax.set_ylim(0, None)
-    ax.set_xlabel("Year")
-    ax.set_ylabel("GHG radiative forcing (W m$^{-2}$)")
-    ax.grid(alpha=0.3)
-    ax.legend(frameon=False, fontsize=9, loc="upper left")
-    fig.tight_layout()
-    fig.savefig(REPO / "tg2" / "figures" / "forcing_trajectories.png", dpi=150)
+    plot_figure(forcing, REPO / "tg2" / "figures" / "forcing_trajectories.png")
     print(f"\nSaved: {REPO / 'tg2/data/forcing_ssp.parquet'} and {REPO / 'tg2/figures/forcing_trajectories.png'}")
 
 
