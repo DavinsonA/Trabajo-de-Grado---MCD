@@ -98,20 +98,24 @@ def main():
     print(f"\nSSP1-2.6 peak: CO2-eq {s126.co2eq_ppm.max():.1f} ppm in {s126.co2eq_ppm.idxmax()} | "
           f"CO2 {s126.co2_ppm.max():.1f} ppm in {s126.co2_ppm.idxmax()} | GHG RF {s126.ghg_rf_wm2.max():.2f} W/m2 in {s126.ghg_rf_wm2.idxmax()}")
 
-    fig, axes = plt.subplots(1, 2, figsize=(13, 4.8), sharex=True)
-    for ax, col, title in ((axes[0], "co2eq_ppm", "CO2-equivalent concentration (GHG only)"), (axes[1], "co2_ppm", "CO2 concentration")):
-        for scenario in SHEETS:
-            s = forcing[forcing.scenario == scenario]
-            if scenario != "historical":
-                s = pd.concat([forcing[(forcing.scenario == "historical") & (forcing.year == 2014)], s])
-            ax.plot(s.year, s[col], color=COLORS[scenario], lw=2, label=LABELS[scenario])
-        ax.axvline(2014.5, color="gray", ls="--", lw=0.8)
-        ax.set_title(title, fontsize=11, loc="left")
-        ax.set_ylabel("ppm")
-        ax.set_xlabel("Year")
-        ax.grid(alpha=0.3)
-    axes[0].legend(frameon=False, fontsize=9)
-    fig.suptitle("Greenhouse-gas forcing trajectories, Meinshausen et al. (2020)", fontsize=12, x=0.01, ha="left")
+    fig, ax = plt.subplots(figsize=(7.5, 4.5))
+    hist_end = forcing[(forcing.scenario == "historical") & (forcing.year == 2014)]
+    for scenario in SHEETS:
+        s = forcing[forcing.scenario == scenario]
+        if scenario != "historical":
+            s = pd.concat([hist_end, s])
+        ax.plot(s.year, s.ghg_rf_wm2, color=COLORS[scenario], lw=2, label=LABELS[scenario])
+    peak_year, peak = int(s126.ghg_rf_wm2.idxmax()), s126.ghg_rf_wm2.max()
+    ax.plot(peak_year, peak, "o", ms=7, mfc="white", mec=COLORS["ssp126"], mew=2, zorder=5)
+    ax.annotate(f"{peak_year}, {peak:.2f} W m$^{{-2}}$", (peak_year, peak), xytext=(0, -12), textcoords="offset points",
+                ha="center", va="top", fontsize=9, color=COLORS["ssp126"])
+    ax.axvline(2014.5, color="gray", ls="--", lw=0.8)
+    ax.set_xlim(1950, 2100)
+    ax.set_ylim(0, None)
+    ax.set_xlabel("Year")
+    ax.set_ylabel("GHG radiative forcing (W m$^{-2}$)")
+    ax.grid(alpha=0.3)
+    ax.legend(frameon=False, fontsize=9, loc="upper left")
     fig.tight_layout()
     fig.savefig(REPO / "tg2" / "figures" / "forcing_trajectories.png", dpi=150)
     print(f"\nSaved: {REPO / 'tg2/data/forcing_ssp.parquet'} and {REPO / 'tg2/figures/forcing_trajectories.png'}")
