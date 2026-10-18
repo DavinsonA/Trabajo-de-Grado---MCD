@@ -105,23 +105,22 @@ def summarize_divergence(div_df):
 
 
 def plot_fan_charts_ssp1_vs_ssp5(forced, sigma, path):
-    """Genera Fan Charts comparando SSP1-2.6 vs SSP5-8.5 con escala unificada por variable."""
-    plt.rcParams.update({"font.size": 8, "axes.titlesize": 9})
+    """Generates Fan Charts comparing SSP1-2.6 vs SSP5-8.5 with unified scale per variable."""
+    # 1. Aumentar el tamaño de fuente global significativamente
+    plt.rcParams.update({"font.size": 12, "axes.titlesize": 14, "axes.labelsize": 12})
     
-    # sharex=True unifica el eje X (Años 1950-2100)
-    # sharey="col" unifica el eje Y de la col 1 (tas) y el eje Y de la col 2 (hurs)
-    fig, axes = plt.subplots(len(SUBREGIONS), len(VARIABLES), figsize=(8, 10), sharex=True, sharey="col")
+    # 2. Aumentar ligeramente el figsize para dar espacio a las fuentes más grandes
+    fig, axes = plt.subplots(len(SUBREGIONS), len(VARIABLES), figsize=(10, 12), sharex=True, sharey="col")
     
     selected_ssps = ["ssp126", "ssp585"]
     colors = {"ssp126": "#1f77b4", "ssp585": "#d62728"}
     
-    # Calcular límites Y globales por variable para asegurar simetría y limpieza
     tas_data = forced[forced.variable == "tas"]["forced"]
     hurs_data = forced[forced.variable == "hurs"]["forced"]
     
     y_limits = {
-        "tas": (min(0, tas_data.min() - 0.5), tas_data.max() + 0.5),      # Ej: -0.5 °C a +6.0 °C
-        "hurs": (hurs_data.min() - 1.0, max(0, hurs_data.max() + 1.0))   # Ej: -12.0 % a +4.0 %
+        "tas": (min(0, tas_data.min() - 0.5), tas_data.max() + 0.5),      
+        "hurs": (hurs_data.min() - 1.0, max(0, hurs_data.max() + 1.0))   
     }
     
     for i, reg in enumerate(SUBREGIONS):
@@ -137,25 +136,31 @@ def plot_fan_charts_ssp1_vs_ssp5(forced, sigma, path):
                 ax.plot(ens.index, ens["med"], color=colors[ssp], label=ssp.upper() if (i == 0 and j == 0) else "")
                 ax.fill_between(ens.index, ens["p10"], ens["p90"], color=colors[ssp], alpha=0.15)
             
-            # Línea de referencia 2*sigma_ref (mediana entre modelos)
             sig_med = sigma[(sigma.region == reg) & (sigma.variable == var)]["sigma_ref"].median()
             ax.axhline(2 * sig_med, color="black", ls="--", lw=0.8, alpha=0.7, label="$2\\sigma_{ref}$" if (i == 0 and j == 0) else "")
             if var == "hurs":
                 ax.axhline(-2 * sig_med, color="black", ls="--", lw=0.8, alpha=0.7)
                 
-            # Fijar explícitamente el rango uniforme del eje Y
             ax.set_ylim(y_limits[var])
-            ax.set_title(f"{reg} - {var.upper()}")
+            
+            # Título con salto de línea y negrita
+            ax.set_title(f"{reg}\n{var.upper()}", fontweight="bold")
             ax.grid(alpha=0.3)
             
-            # Etiquetas limpias solo en los bordes
+            # Ejes en inglés
             if j == 0:
-                ax.set_ylabel("Anomalía (°C)")
+                ax.set_ylabel("Anomaly (°C)", fontweight="bold")
             elif j == 1:
-                ax.set_ylabel("Anomalía (%)")
+                ax.set_ylabel("Anomaly (%)", fontweight="bold")
+                
+            if i == len(SUBREGIONS) - 1:
+                ax.set_xlabel("Year", fontweight="bold")
+                
+    # 3. Aumentar tamaño de la leyenda
+    axes[0, 0].legend(loc="upper left", frameon=False, fontsize=11)
     
-    axes[0, 0].legend(loc="upper left", frameon=False, fontsize=7)
-    fig.tight_layout()
+    # 4. Aplicar espaciado vertical/horizontal para prevenir cruces de texto
+    fig.tight_layout(h_pad=2.0, w_pad=2.0)
     fig.savefig(path, dpi=300)
     plt.close(fig)
 
