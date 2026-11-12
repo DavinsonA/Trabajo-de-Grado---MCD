@@ -41,7 +41,7 @@ def compute_toe(forced, sigma):
     for (model, scenario, variable, region), g in df.groupby(["model", "scenario", "variable", "region"]):
         g = g.sort_values("year")
         years = g["year"].to_numpy()
-        snr = g["snr"].to_numpy()
+        snr = g["snr"].to_numpy() * np.sign(g["snr"].to_numpy()[-1])
         
         # Encontrar primer año donde SNR >= threshold de forma sostenida hasta 2100
         toe_1 = next((int(y) for i, y in enumerate(years) if np.all(snr[i:] >= 1.0)), None)
@@ -69,9 +69,12 @@ def compute_all_divergences(forced, sigma):
                 diff = (piv[s1] - piv[s2]).abs()
                 years = diff.index.to_numpy()
                 diff_vals = diff.to_numpy()
+                keep = years >= 2015
+                years, diff_vals = years[keep], diff_vals[keep]
                 
                 # Primer año sostenido hasta 2100
                 div_year = next((int(y) for i, y in enumerate(years) if np.all(diff_vals[i:] >= threshold)), None)
+                div_year_strict = next((int(y) for i, y in enumerate(years) if np.all(diff_vals[i:] >= 2 * threshold)), None)
                 
                 rows.append({
                     "model": model,
@@ -80,12 +83,13 @@ def compute_all_divergences(forced, sigma):
                     "scenario_1": s1,
                     "scenario_2": s2,
                     "pair": f"{s1}_vs_{s2}",
-                    "divergence_year": div_year
+                    "divergence_year": div_year,
+                    "divergence_year_strict": div_year_strict
                 })
     return pd.DataFrame(rows)
 
 
-def summarize_divergence(div_df):
+def summarize_divergence(div_df, col="divergence_year"):
     """Genera un resumen agrupado con mediana, min, max y formato listo de publicación."""
     def format_stats(s):
         valid = s.dropna()
@@ -93,7 +97,7 @@ def summarize_divergence(div_df):
             return "Sin divergencia"
         return f"{valid.median():.0f} [{valid.min():.0f}-{valid.max():.0f}]"
 
-    summary = div_df.groupby(["pair", "variable", "region"])["divergence_year"].agg(
+    summary = div_df.groupby(["pair", "variable", "region"])[col].agg(
         ensemble_median="median",
         ensemble_min="min",
         ensemble_max="max",
@@ -180,17 +184,22 @@ def main():
     
     div_summary = summarize_divergence(div_all)
     div_summary.to_csv(OUT / "divergence_ensemble_summary.csv", index=False)
+    div_strict = summarize_divergence(div_all, "divergence_year_strict")
+    div_strict.to_csv(OUT / "divergence_ensemble_summary_strict.csv", index=False)
     
     # 3. Reporte en consola (se mantiene idéntico)
     print("## Time of Emergence (ToE SNR>=2) Ensemble Median [Min-Max] Year (SSP5-8.5)")
     toe_s5 = toe[toe.scenario == "ssp585"]
     print(toe_s5.groupby(["variable", "region"])["toe_snr2"].agg(
-        lambda s: f"{s.median():.0f} [{s.min():.0f}-{s.max():.0f}]" if s.notna().any() else "No emerge"
+        lambda s: f"{s.median():.0f} [{s.min():.0f}-{s.max():.0f}] n={s.notna().sum()}" if s.notna().any() else "No emerge"
     ).unstack(0).to_string())
     
     print("\n## Scenario Divergence Year (SSP1-2.6 vs SSP5-8.5) Ensemble Median [Min-Max]")
     p1 = div_summary[div_summary.pair == "ssp126_vs_ssp585"]
     print(p1.pivot(index="region", columns="variable", values="formatted").to_string())
+    print("\n## Same pair, strict threshold 2*sqrt(2)*sigma_ref")
+    p1s = div_strict[div_strict.pair == "ssp126_vs_ssp585"]
+    print(p1s.pivot(index="region", columns="variable", values="formatted").to_string())
     
     # 4. Generar Figura
     plot_fan_charts_ssp1_vs_ssp5(forced, sigma, FIGS / "fan_charts_toe.png")
