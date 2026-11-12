@@ -21,3 +21,6 @@ tmp/
 # OS and editor
 .DS_Store
 .vscode/
+
+# Small TG II inputs that must be versioned
+!tg2/data/*.parquet
