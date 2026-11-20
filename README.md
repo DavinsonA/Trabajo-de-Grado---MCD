@@ -1,11 +1,11 @@
 # Trabajo de Grado — Maestría en Ciencia de Datos (Universidad Icesi)
 
-Tendencias e incertidumbre de la temperatura del aire (`tas`) y la humedad relativa (`hurs`) en Sudamérica, 1950–2100, con el dataset NASA NEX-GDDP-CMIP6.
+Tendencias, divergencia entre escenarios e incertidumbre de la temperatura del aire (`tas`) y la humedad relativa (`hurs`) en Sudamérica, 1950–2100, con el dataset NASA NEX-GDDP-CMIP6.
 
 | Fase | Título | Estado |
 |---|---|---|
 | TG I | Temperature and Humidity Trends in South America (1950–2100): Spatiotemporal Analysis Using the NEX-GDDP-CMIP6 Dataset | Entregado. Versión congelada en el tag `tg1-final` |
-| TG II | Scenario Divergence and Projection Uncertainty of Temperature and Humidity in South America (1950–2100): A Probabilistic Machine Learning Approach | En curso |
+| TG II | Scenario Divergence and Projection Uncertainty of Temperature and Humidity in South America (1950–2100): A Probabilistic Machine Learning Approach | Pipeline completo (scripts 01–12); documento en revisión final, noviembre de 2026 |
 
 - **Autores:** Davinson Alexander Arteaga Bermudez y Gian Alepsi Mendoza Oviedo
 - **Director:** PhD. Jack Marquez
@@ -17,6 +17,7 @@ Tendencias e incertidumbre de la temperatura del aire (`tas`) y la humedad relat
 - 8 GCMs: ACCESS-CM2, CanESM5, CESM2, EC-Earth3, GFDL-ESM4, IPSL-CM6A-LR, MIROC6, MPI-ESM1-2-HR.
 - Escenarios: historical (1950–2014); SSP1-2.6, SSP2-4.5, SSP3-7.0 y SSP5-8.5 (2015–2100).
 - Variables: `tas` y `hurs`.
+- TG II usa además las concentraciones de gases de efecto invernadero de Meinshausen et al. (2020) y la sensibilidad climática de cada modelo de Meehl et al. (2020).
 
 Los datos (~152 GB) no están en este repositorio. Su organización en la máquina de trabajo se describe en [`docs/data_layout.md`](docs/data_layout.md).
 
@@ -30,18 +31,23 @@ Los datos (~152 GB) no están en este repositorio. Su organización en la máqui
 │   ├── notebooks/   tablero interactivo, notebook de figuras y analysis_lib.py
 │   ├── results/     tablas y figuras generadas por los scripts
 │   └── figures/     figuras del documento de TG I (ver su README)
-└── tg2/             Trabajo de Grado II (en curso)
+└── tg2/
+    ├── pipeline/    scripts 01–12 (ver tabla abajo)
+    ├── data/        insumos pequeños versionados: forzamiento, sensibilidad de los modelos, folds
+    └── figures/     figuras del documento de TG II (ver su README)
 ```
 
-## Reproducir TG I
-
-Entorno (Python 3.12.3):
+Entorno (Python 3.12.3), común a ambas fases:
 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
+
+`requirements.txt` instala PyTorch en su versión solo para CPU, desde el índice indicado en su primera línea.
+
+## Reproducir TG I
 
 Scripts de `tg1/pipeline/`, en orden:
 
@@ -63,4 +69,31 @@ Los notebooks de `tg1/notebooks/` deben ejecutarse desde esa carpeta, porque imp
 
 Scripts y notebooks usan la ruta absoluta `/media/volume/jay2vol/nexgddp` (variable `BASE_DIR`), donde escriben sus salidas. Para ejecutarlos en otra máquina hay que ajustarla. `tg1/results/` contiene la copia de las salidas usadas en TG I.
 
-Las lecturas de apoyo están en [`docs/references.md`](docs/references.md).
+## Reproducir TG II
+
+TG II parte de los mismos archivos diarios de `raw/` (descargados con los scripts 02–03 de TG I) y no usa las tablas de TG I. Los scripts leen la raíz de datos de la variable de entorno `NEXGDDP_ROOT` (por defecto `/media/volume/jay2vol/nexgddp`) y escriben sus tablas en `processed_tg2/`; las figuras y los insumos pequeños van a `tg2/figures/` y `tg2/data/` dentro del repo. Los scripts marcados como largos son reanudables y conviene correrlos dentro de `tmux`.
+
+| Script | Qué hace | Objetivo | Depende de |
+|---|---|---|---|
+| `01_subregional_monthly_means.py` | Una pasada sobre los 6,544 archivos diarios: media mensual por modelo, escenario, variable y región, simple, ponderada por cos(lat) y ponderada con `hurs` recortada a [0, 100] (largo, reanudable) | Base | `raw/` |
+| `02_forcing_meinshausen.py` | Concentraciones, forzamiento de gases y CO₂-eq por escenario; Fig. 2 | OE4 | `external/meinshausen2020/` |
+| `03_anomalies_forced_response.py` | Anomalías mensuales y anuales, σ_ref, respuesta forzada (polinomio de grado 4) y correlación móvil tas–hurs | Base | 01 |
+| `04_emulator_table.py` | Tabla del emulador (157,056 filas por variable) y 12 folds de validación con control de fugas | OE4 | 02, 03 |
+| `05_cost_benchmark.py` | Prueba de costo computacional en un fold (opcional) | OE4 | 04 |
+| `06_toe_divergence.py` | Tiempo de emergencia y año de divergencia entre escenarios por subregión; Fig. 3 | OE1 | 03 |
+| `07_pelt_changepoints.py` | Puntos de cambio con PELT en pendiente, varianza y acoplamiento T–H, con penalización calibrada y consenso entre modelos; Figs. 4 y 5 | OE2 | 03 |
+| `08_uncertainty_partition.py` | Partición de la incertidumbre (Hawkins y Sutton): interna, modelo y escenario; Fig. 6 | OE3 | 03 |
+| `09_emulators.py` | Emuladores lineal, XGBoost cuantil y ensamble de redes en los 12 folds; CRPS, cobertura y SHAP; Fig. 8 (~4 h, reanudable) | OE4 | 04 |
+| `10_oe4_figures.py` | Mejora frente al lineal y cobertura por fold; Fig. 7 | OE4 | 09 |
+| `11_cell_annual_means.py` | Medias anuales por celda de tierra (historical, SSP2-4.5, SSP5-8.5) (largo, reanudable) | OE1 | `raw/` |
+| `12_toe_maps.py` | Tiempo de emergencia por celda y mapas | OE1 | 11 |
+
+El suplemento de Meinshausen et al. (2020) se descarga una vez:
+
+```bash
+mkdir -p /media/volume/jay2vol/nexgddp/external/meinshausen2020 && cd $_
+curl -L -o supplement.zip https://gmd.copernicus.org/articles/13/3571/2020/gmd-13-3571-2020-supplement.zip
+unzip -o supplement.zip
+```
+
+Las decisiones de diseño de TG II y el contenido de `tg2/data/` están en [`tg2/README.md`](tg2/README.md). Las referencias están en [`docs/references.md`](docs/references.md).

@@ -1,3 +1,4 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
 anyio==4.13.0
 argon2-cffi==25.1.0
 argon2-cffi-bindings==25.1.0
