@@ -129,8 +129,7 @@ def plot_fan_charts_ssp1_vs_ssp5(forced, sigma, path):
             ax.set_xlim(1950, 2100)
             ax.set_xticks([1960, 2020, 2080])
             ax.grid(alpha=0.3, lw=0.5)
-            if i == 0:
-                ax.set_title(reg, loc="left")
+            ax.set_title(f"({'ABCDEFGH'[4 * i + j]})" + (f" {reg}" if i == 0 else ""), loc="left")
             if j == 0:
                 ax.set_ylabel(ylabel)
     handles, labels = axes[0, 0].get_legend_handles_labels()

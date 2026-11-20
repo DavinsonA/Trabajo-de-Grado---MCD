@@ -153,10 +153,10 @@ def shap_importance(table, spec, targets):
     imp.to_csv(OUT / "shap_importance.csv", index=False)
     plt.rcParams.update({"font.size": 8, "axes.titlesize": 8.5})
     fig, axes = plt.subplots(1, len(targets), figsize=(6.5, 2.4))
-    for ax, target in zip(np.atleast_1d(axes), targets):
+    for k, (ax, target) in enumerate(zip(np.atleast_1d(axes), targets)):
         d = imp[imp.target == target].sort_values("mean_abs_shap")
         ax.barh(d.feature.map(LABELS), d.mean_abs_shap, color="#4e79a7")
-        ax.set_title("Temperature (°C)" if target == "tas_anom" else "Relative humidity (%)", loc="left")
+        ax.set_title(f"({'AB'[k]}) " + ("Temperature (°C)" if target == "tas_anom" else "Relative humidity (%)"), loc="left")
         ax.set_xlabel("mean |SHAP|")
         ax.grid(axis="x", alpha=0.3, lw=0.5)
     fig.tight_layout(pad=0.4, w_pad=1.5)

@@ -46,7 +46,7 @@ def main():
             ax.set_yticklabels(labels)
             ax.set_ylim(len(order) - 0.5, -0.5)
             ax.grid(axis="x", alpha=0.3, lw=0.5)
-            ax.set_title(f"{name}: {'skill' if j == 0 else 'coverage'}", loc="left")
+            ax.set_title(f"({'ABCD'[2 * i + j]}) {name}: {'skill' if j == 0 else 'coverage'}", loc="left")
             if i == 1:
                 ax.set_xlabel(xlabel)
     handles, lbls = axes[0, 0].get_legend_handles_labels()

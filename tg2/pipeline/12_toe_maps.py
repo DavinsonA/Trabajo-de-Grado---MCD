@@ -86,7 +86,7 @@ def plot(maps, lat, lon, land, path):
         features = []
         print(f"coastlines skipped (Natural Earth unavailable): {type(exc).__name__}")
     fig, axes = plt.subplots(1, 2, figsize=(6.5, 4.6), subplot_kw={"projection": ccrs.PlateCarree()})
-    for ax, (var, toe) in zip(axes, maps.items()):
+    for k, (ax, (var, toe)) in enumerate(zip(axes, maps.items())):
         grid = np.full(land.shape, np.nan)
         grid[land] = toe
         never = np.where(np.isinf(grid), 1.0, np.nan)
@@ -101,7 +101,7 @@ def plot(maps, lat, lon, land, path):
         gl = ax.gridlines(draw_labels=True, linewidth=0.2, color="gray", alpha=0.5)
         gl.top_labels = gl.right_labels = False
         gl.xlabel_style = gl.ylabel_style = {"size": 7}
-        ax.set_title(f"{NAMES[var]}, {SSP_LABELS[MAP_SCENARIO]}", loc="left")
+        ax.set_title(f"({'AB'[k]}) {NAMES[var]}, {SSP_LABELS[MAP_SCENARIO]}", loc="left")
     cbar = fig.colorbar(mesh, ax=axes, orientation="horizontal", fraction=0.05, pad=0.08, aspect=40, extend="min")
     cbar.set_label("Year of emergence (ensemble median, SNR ≥ 2)")
     fig.legend(handles=[Patch(color="#c8c8c8", label="No emergence by 2100")], loc="lower right", frameon=False,

@@ -88,8 +88,7 @@ def plot(part, path):
             ax.set_xlim(2015, 2100)
             ax.set_ylim(0, 1)
             ax.set_xticks([2030, 2060, 2090])
-            if i == 0:
-                ax.set_title(reg, loc="left")
+            ax.set_title(f"({'ABCDEFGH'[4 * i + j]})" + (f" {reg}" if i == 0 else ""), loc="left")
             if j == 0:
                 ax.set_ylabel(f"{'Temperature' if var == 'tas' else 'Relative humidity'}\nfraction of variance")
     handles, labels = axes[0, 0].get_legend_handles_labels()

@@ -61,7 +61,7 @@ def plot_figure(forcing, path):
     fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.7), sharey=True)
     hist_end = forcing[(forcing.scenario == "historical") & (forcing.year == 2014)]
     s126 = forcing[forcing.scenario == "ssp126"].set_index("year")
-    panels = (("co2eq_ppm", "CO$_2$-equivalent concentration"), ("co2_ppm", "CO$_2$ concentration"))
+    panels = (("co2eq_ppm", "(A) CO$_2$-equivalent concentration"), ("co2_ppm", "(B) CO$_2$ concentration"))
     for ax, (col, title) in zip(axes, panels):
         for scenario in SHEETS:
             s = forcing[forcing.scenario == scenario]

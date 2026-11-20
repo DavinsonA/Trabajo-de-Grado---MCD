@@ -156,7 +156,7 @@ def plot_breaks(forced, cons, path):
     plt.rcParams.update({"font.size": 8, "axes.titlesize": 9, "axes.labelsize": 8, "xtick.labelsize": 7.5, "ytick.labelsize": 7.5})
     colors, styles = {"tas": "#d62728", "hurs": "#1f77b4"}, {"slope": "--", "variance": ":"}
     fig, axes = plt.subplots(2, 2, figsize=(6.5, 4.6), sharex=True)
-    for ax, reg in zip(axes.flat, SUBREGIONS):
+    for k, (ax, reg) in enumerate(zip(axes.flat, SUBREGIONS)):
         ax2 = ax.twinx()
         for var, a in (("tas", ax), ("hurs", ax2)):
             sub = forced[(forced.region == reg) & (forced.variable == var) & (forced.scenario == "ssp585")]
@@ -171,7 +171,7 @@ def plot_breaks(forced, cons, path):
             ax.axvline(row.year_median, color=colors[row.variable], ls=styles[row.kind], lw=1.1)
             ax.text(row.year_median + 1, lo + (i % 3) * 0.12 * (hi - lo), str(row.year_median),
                     color=colors[row.variable], fontsize=6.5, rotation=90, va="bottom")
-        ax.set_title(reg, loc="left")
+        ax.set_title(f"({'ABCD'[k]}) {reg}", loc="left")
         ax.set_xlim(1950, 2100)
         ax.grid(alpha=0.3, lw=0.5)
     fig.text(0.5, 0.01, "Dashed: slope change. Dotted: variance change. Consensus of >= 5 of 8 GCMs, SSP5-8.5 and historical.",
@@ -185,7 +185,7 @@ def plot_coupling(coup, cons, path):
     plt.rcParams.update({"font.size": 8, "axes.titlesize": 9, "axes.labelsize": 8, "xtick.labelsize": 7.5, "ytick.labelsize": 7.5})
     styles = {"ssp126": ("SSP1-2.6", "#1f77b4"), "ssp585": ("SSP5-8.5", "#d62728")}
     fig, axes = plt.subplots(2, 2, figsize=(6.5, 4.2), sharex=True, sharey=True)
-    for ax, reg in zip(axes.flat, SUBREGIONS):
+    for k, (ax, reg) in enumerate(zip(axes.flat, SUBREGIONS)):
         for s, (label, color) in styles.items():
             sub = coup[(coup.region == reg) & (coup.scenario == s)]
             ens = sub.groupby("year")["coupling"].quantile([0.1, 0.5, 0.9]).unstack()
@@ -196,7 +196,7 @@ def plot_coupling(coup, cons, path):
         for row in marks.itertuples():
             ax.axvline(row.year_median, color="black", ls="--", lw=1.0)
             ax.text(row.year_median + 1, ax.get_ylim()[1], str(row.year_median), fontsize=6.5, rotation=90, va="top")
-        ax.set_title(reg, loc="left")
+        ax.set_title(f"({'ABCD'[k]}) {reg}", loc="left")
         ax.set_xlim(1950, 2100)
         ax.grid(alpha=0.3, lw=0.5)
     axes[0, 0].set_ylabel("Normalized T-H covariance")
